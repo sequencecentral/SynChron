@@ -35,5 +35,7 @@ setup(
     # We will also need a readme eventually (there will be a warning)
     # long_description=open('README.txt').read(),
 )
+
 #to make an egg:
 #python setup.py bdist_egg
+#egg-info added
