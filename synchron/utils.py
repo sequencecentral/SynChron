@@ -1,12 +1,12 @@
+import random
+import re
 from io import StringIO
 from html.parser import HTMLParser
 import feedparser
-import random
 import requests
-import re
 import pyshorteners
-import urllib.request
 import ssl
+import urllib.request
 import urlextract
 from urlextract import URLExtract
 from urllib.request import Request, urlopen

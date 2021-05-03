@@ -15,7 +15,7 @@ setup(
     # data_files=[],#for data shared by multiple packages
     # setup_requires=['nltk']
     # Needed to silence warnings (and to be a worthwhile package)
-    name='Synchronicity2',
+    name='SynChron',
     # packages=['synchronicity','synchronicity.quotewidget'],
     packages = find_packages(),
     include_package_data = True,
@@ -30,8 +30,9 @@ setup(
     version='1',
     # The license can be anything you like
     license='MIT',
-    long_description=open('README.md').read(),
-    install_requires=open('requirements.txt').read(),
+    # long_description=open('README.md').read(),
+    # install_requires=open('requirements.txt').read(),
+    install_reqs = parse_requirements('requirements.txt', session='req')
     # We will also need a readme eventually (there will be a warning)
     # long_description=open('README.txt').read(),
 )
@@ -39,3 +40,7 @@ setup(
 #to make an egg:
 #python setup.py bdist_egg
 #egg-info added
+
+#make a dist: python setup.py sdist
+# pip install twine
+# twine upload dist/*
