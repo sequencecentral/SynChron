@@ -1,4 +1,8 @@
 #!/bin/bash
+#Github
+git add --all
+git commit -am 'pypi upload'
+git push
 
 #make an egg
 python setup.py bdist_egg
@@ -7,4 +11,4 @@ python setup.py bdist_egg
 python setup.py sdist
 
 #upload pypi
-twine upload dist/*
+twine upload --skip-existing dist/*
