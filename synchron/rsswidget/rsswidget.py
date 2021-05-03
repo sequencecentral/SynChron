@@ -20,9 +20,7 @@ ua = "Mozilla Firefox Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/2
 max_tries = 10
 max_len = 250
 
-# #################################### Preconfigured feeds: ####################################
-def load_feeds():
-    return {
+default_feeds = {
     "genomics":{
         "type":"pubmed",
         "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1tyP_Q3NRDksDSxLk7JOQBB-ROqqN-dqZVK6I3HZvpTHjX5Q1i/?limit=100&utm_campaign=pubmed-2&fc=20210415124733"},
@@ -77,7 +75,6 @@ def load_feeds():
         "url":"https://rss.indeed.com/rss?q=%28%22cloud+solutions+architect%22+or+%22security+architect%22+or+%22it+project+manager%22+or+aws+or+azure+or+cybersecurity%29+%24100%2C000%2B&l=remote&radius=25"
     }
     }
-
 #################################### Check content: ####################################
 
 def valid_string(check_string,rejects=['404','error']):
@@ -248,15 +245,16 @@ def get_rss(url,count=1,rss_type='rss'):
 #################################### Accessor functions: ####################################
 #match feed names
 def get_feed(feed_name,count=1):
-    feeds = load_feeds()
+    if(feed_name not in default_feeds):
+        return get_url(feed_name)
     #get_rss(url,type)
-    url = feeds[feed_name]['url']
-    if("pubmed" in feeds[feed_name]['type']): return get_rss(url,count,'pubmed')
-    elif("techcrunch" in feeds[feed_name]['type']): return get_rss(url,count,'techcrunch')
-    elif("nature_blog" in feeds[feed_name]['type']): return get_rss(url,count,'nature_blog')
-    elif("genomeweb" in feeds[feed_name]['type']): return get_rss(url,count,'genomeweb')
-    elif("bioitworld" in feeds[feed_name]['type']): return get_rss(url,count,'bioitworld')
-    elif("indeed" in feeds[feed_name]['type']): return get_rss(url,count,'indeed')
+    url = default_feeds[feed_name]['url']
+    if("pubmed" in default_feeds[feed_name]['type']): return get_rss(url,count,'pubmed')
+    elif("techcrunch" in default_feeds[feed_name]['type']): return get_rss(url,count,'techcrunch')
+    elif("nature_blog" in default_feeds[feed_name]['type']): return get_rss(url,count,'nature_blog')
+    elif("genomeweb" in default_feeds[feed_name]['type']): return get_rss(url,count,'genomeweb')
+    elif("bioitworld" in default_feeds[feed_name]['type']): return get_rss(url,count,'bioitworld')
+    elif("indeed" in default_feeds[feed_name]['type']): return get_rss(url,count,'indeed')
     
 #match something in the url. Less reliable but more flexible
 def get_url(url,count=1):
@@ -271,7 +269,6 @@ def get_url(url,count=1):
 
 # Upodated function to allow feed name or just a url
 def get_update(feed_name = "techcrunch",c=1,*args,**kwargs):
-    feeds = load_feeds()
     if('count' in kwargs): #set count if specified by keyword, else default to c arg
         count = kwargs['count']
     elif(c):
@@ -285,7 +282,7 @@ def get_update(feed_name = "techcrunch",c=1,*args,**kwargs):
     elif('name' in kwargs):
         print("Using preconfigured feed.")
         return get_feed(kwargs['name'].lower(),count)
-    elif(feed_name.lower() in feeds): #if
+    elif(feed_name.lower() in default_feeds): #if
         print("Using preconfigured feed.")
         return get_feed(feed_name.lower(),count)
     else: #else try to get as url
