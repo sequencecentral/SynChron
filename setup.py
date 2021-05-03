@@ -3,15 +3,15 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install as _install
 
 #custom post-installation steps go here:
-class Install(_install):
-    def run(self):
-        _install.do_egg_install(self)
-        #nothing else to do
+# class Install(_install):
+#     def run(self):
+#         _install.do_egg_install(self)
+#         #nothing else to do
 
 setup(
-    cmdclass={
-        'install': Install,
-    },
+    # cmdclass={
+    #     'install': Install,
+    # },
     # data_files=[],#for data shared by multiple packages
     # setup_requires=['nltk']
     # Needed to silence warnings (and to be a worthwhile package)
@@ -32,7 +32,7 @@ setup(
     # Needed for dependencies
     # install_requires=[''],
     # *strongly* suggested for sharing
-    version='1.0.9',
+    version='1.0.10',
     # The license can be anything you like
     license='MIT',
     # long_description=open('README.md').read(),
