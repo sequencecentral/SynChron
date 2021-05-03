@@ -76,6 +76,7 @@ def load_feeds():
         "type":"indeed",
         "url":"https://rss.indeed.com/rss?q=%28%22cloud+solutions+architect%22+or+%22security+architect%22+or+%22it+project+manager%22+or+aws+or+azure+or+cybersecurity%29+%24100%2C000%2B&l=remote&radius=25"
     }
+    }
 
 #################################### Check content: ####################################
 
