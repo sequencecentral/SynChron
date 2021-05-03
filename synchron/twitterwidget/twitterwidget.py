@@ -10,7 +10,7 @@ from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
 try:
     from .. import utils
 except:
-    from synchronicity import utils
+    from synchron import utils
     
 ################################# TWITTER WIDGET #################################
 class TwitterWidget:

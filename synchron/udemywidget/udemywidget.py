@@ -16,7 +16,7 @@ max_len = 240
 try:
     from .. import utils
 except:
-    from synchronicity import utils
+    from synchron import utils
 
 def get_udemy_info(url):
     max_len = 260

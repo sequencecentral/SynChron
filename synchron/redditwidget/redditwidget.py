@@ -13,7 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
 try:
     from .. import utils
 except:
-    from synchronicity import utils
+    from synchron import utils
 
 @func_set_timeout(10)
 def check_reddit_post(post):

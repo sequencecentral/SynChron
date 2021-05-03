@@ -18,6 +18,7 @@ setup(
     name='SynChron',
     # packages=['synchronicity','synchronicity.quotewidget'],
     packages = find_packages(),
+    #This doesn't work on PyPi. I'm sure there's a perfectly good explanation for anyone who cares.
     include_package_data = True,
     package_data={
         '': ['quotes-list.json','feeds.json'],

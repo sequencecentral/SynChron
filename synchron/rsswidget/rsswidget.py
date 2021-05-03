@@ -14,18 +14,17 @@ from urllib.request import Request, urlopen
 try:
     from .. import utils
 except:
-    from synchronicity import utils
+    from synchron import utils
 
 ua = "Mozilla Firefox Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0"
 max_tries = 10
 max_len = 250
 
-#################################### Preconfigured feeds: ####################################
-def load_feeds(file='feeds.json'):
-    file_path = path.join(cwd, file)
-    with open(file_path) as f:
-        feeds = json.load(f)
-        return feeds
+# #################################### Preconfigured feeds: ####################################
+def load_feeds():
+    import feeds
+    return feeds.feeds
+
 #################################### Check content: ####################################
 
 def valid_string(check_string,rejects=['404','error']):
