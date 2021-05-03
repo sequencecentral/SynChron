@@ -19,7 +19,11 @@ setup(
     # packages=['synchronicity','synchronicity.quotewidget'],
     packages = find_packages(),
     include_package_data = True,
-    package_data={'': ['quotes-list.json','feeds.json']},
+    package_data={
+        '': ['quotes-list.json','feeds.json'],
+        'rsswidget': ['feeds.json'],
+        'quotewidget':['quotes-list.json']
+        },
     url='https://github.com/sequencecentral/SynChron.git',
     author='Steve Ayers',
     author_email='steve@sequenccecentral.com',
