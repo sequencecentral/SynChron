@@ -11,4 +11,4 @@ python setup.py bdist_egg
 python setup.py sdist
 
 #upload pypi
-twine upload --skip-existing dist/*
+twine upload -u sequencecentral --skip-existing dist/*
