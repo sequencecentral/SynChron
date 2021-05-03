@@ -11,4 +11,5 @@ python setup.py bdist_egg
 python setup.py sdist
 
 #upload pypi
+pip install twine
 twine upload -u sequencecentral --skip-existing dist/*
