@@ -32,7 +32,7 @@ setup(
     # Needed for dependencies
     # install_requires=[''],
     # *strongly* suggested for sharing
-    version='1.0.3',
+    version='1.0.5',
     # The license can be anything you like
     license='MIT',
     # long_description=open('README.md').read(),
