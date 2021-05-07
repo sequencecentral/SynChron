@@ -220,18 +220,19 @@ def get_rss(url,count=1,rss_type='rss'):
             tries += 1
             post = random.choice(NewsFeed.entries)
             print("Getting RSS result. Attempt: %i"%(tries))
-            try:
+            # try:
                 # post = format_rss_result(post)
-                post = format_result(post,rss_type)
+            post = format_result(post,rss_type)
                 # post = func_timeout(10,format_result, args=(post,rss_type))
-                if(valid_post(post),rejects): 
-                    # res = format_result(post)
-                    return post
-            except FunctionTimedOut:
-                print("Timed out. Rejecting post.")
-            except Exception as e:
-                print(e)
-                print("Invalid post.")
+            if(valid_post(post),rejects): 
+                # res = format_result(post)
+                res = post
+                return res
+            # except FunctionTimedOut:
+            #     print("Timed out. Rejecting post.")
+            # except Exception as e:
+            #     print(e)
+            #     print("Invalid post.")
     else:
         res = []
         for post in NewsFeed.entries:
@@ -303,6 +304,7 @@ def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
     return get_update(feed_name,c,args,kwargs)
 
 if __name__ == "__main__":
+    print("tw")
     # url="https://www.engadget.com/rss.xml" #test of non-specific rss
     res = get_update("hot_jobs")
     # res = get_rss(url,1)
