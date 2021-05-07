@@ -8,6 +8,8 @@ import urllib.request
 from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
 import time 
 from os import path
+from urlextract import URLExtract
+
 cwd = path.dirname(__file__)
 package_name = "synchronicity"
 from urllib.request import Request, urlopen
@@ -169,11 +171,19 @@ def format_pubmed_result(ref):
 
 #################################### Indeed: ####################################
 def format_indeed_result(ref):
-    print("Found result: "+ref['title'])
+    # print("Found result: "+ref['title'])
     url = utils.clean_url(ref['link'])
-    print("Getting company URL")
-    company_url = url
-    links = utils.get_links(url)
+    # print(url)
+    # print("Getting company URL")
+    # company_url = url
+    # print("Getting links...")
+    extractor = URLExtract()
+    req = requests.get(url)
+    page = req.text
+    urls = extractor.find_urls(page)
+    # links = utils.get_links(url)
+    links = urls
+    print("Got links.")
     for link in links:
         if("indeed.com/rc/clk" in link):
             company_url = utils.unshorten(link)
@@ -190,7 +200,7 @@ def format_indeed_result(ref):
         'source':ref['source']
         }
 #################################### Get Result: ####################################
-@func_set_timeout(10)
+@func_set_timeout(300)
 def format_result(res,res_type='rss'):
     if(res_type == 'pubmed'): return(format_pubmed_result(res))
     if(res_type == 'techcrunch'): return(format_techcrunch_result(res))
@@ -216,8 +226,7 @@ def get_rss(url,count=1,rss_type='rss'):
                 # post = func_timeout(10,format_result, args=(post,rss_type))
                 if(valid_post(post),rejects): 
                     # res = format_result(post)
-                    res = post
-                    return res
+                    return post
             except FunctionTimedOut:
                 print("Timed out. Rejecting post.")
             except Exception as e:
