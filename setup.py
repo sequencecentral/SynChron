@@ -1,50 +1,315 @@
-import setuptools.command.build_py
-from setuptools import setup, find_packages
-from setuptools.command.install import install as _install
+import feedparser
+import random
+import requests
+import re
+import json
+import pyshorteners
+import urllib.request
+from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
+import time 
+from os import path
+from urlextract import URLExtract
 
-#custom post-installation steps go here:
-# class Install(_install):
-#     def run(self):
-#         _install.do_egg_install(self)
-#         #nothing else to do
+cwd = path.dirname(__file__)
+package_name = "synchronicity"
+from urllib.request import Request, urlopen
+try:
+    from .. import utils
+except:
+    from synchron import utils
 
-setup(
-    # cmdclass={
-    #     'install': Install,
-    # },
-    # data_files=[],#for data shared by multiple packages
-    # setup_requires=['nltk']
-    # Needed to silence warnings (and to be a worthwhile package)
-    name='SynChron',
-    # packages=['synchronicity','synchronicity.quotewidget'],
-    packages = find_packages(),
-    #This doesn't work on PyPi. I'm sure there's a perfectly good explanation for anyone who cares.
-    include_package_data = True,
-    package_data={
-        '': ['quotes-list.json','feeds.json'],
-        'rsswidget': ['feeds.json'],
-        'quotewidget':['quotes-list.json']
-        },
-    url='https://github.com/sequencecentral/SynChron.git',
-    author='Steve Ayers',
-    author_email='steve@sequenccecentral.com',
-    # Needed to actually package something
-    # Needed for dependencies
-    # install_requires=[''],
-    # *strongly* suggested for sharing
-    version='1.0.11',
-    # The license can be anything you like
-    license='MIT',
-    # long_description=open('README.md').read(),
-    install_requires=['appdirs==1.4.4', 'beautifulsoup4==4.9.3', 'breadability==0.1.20', 'bs4==0.0.1', 'certifi==2020.12.5', 'chardet==4.0.0', 'click==7.1.2', 'cssselect==1.1.0', 'docopt==0.6.2', 'feedfinder2==0.0.4', 'feedparser==6.0.2', 'filelock==3.0.12', 'func-timeout==4.3.5', 'gcloud==0.17.0', 'googleapis-common-protos==1.53.0', 'httplib2==0.19.1', 'idna==2.10', 'install==1.3.4', 'jieba3k==0.35.1', 'joblib==1.0.1', 'jws==0.1.3', 'lxml==4.6.3', 'newspaper3k==0.2.8', 'nltk>=3.6.1', 'oauth2client==3.0.0', 'oauthlib==3.1.0', 'Pillow==8.2.0', 'praw==7.2.0', 'prawcore==2.0.0', 'protobuf==3.16.0rc1', 'pyasn1==0.4.8', 'pyasn1-modules==0.2.8', 'pycountry==20.7.3', 'pycryptodome==3.4.3', 'pyparsing==2.4.7', 'pyshorteners==1.0.1', 'PySocks==1.7.1', 'python-dateutil==2.8.1', 'python-jwt>=2.0.1', 'PyYAML==5.4.1', 'regex==2021.4.4', 'requests>=2.0', 'requests-file>=1.5', 'requests-oauthlib>=1.3', 'requests-toolbelt>=0.7', 'rsa>=4.7.2', 'sgmllib3k==1.0.0', 'six==1.15.0', 'soupsieve==2.2.1', 'sumy==0.8.1', 'tinysegmenter==0.3', 'tldextract==3.1.0', 'tqdm==4.60.0', 'tweepy==3.10.0', 'update-checker==0.18.0', 'uritools==3.0.1', 'urlextract==1.2.0', 'urllib3>=1.26', 'websocket-client==0.58.0'],
-    # We will also need a readme eventually (there will be a warning)
-    # long_description=open('README.txt').read(),
-)
+ua = "Mozilla Firefox Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0"
+max_tries = 10
+max_len = 250
 
-#to make an egg:
-#python setup.py bdist_egg
-#egg-info added
+default_feeds = {
+    "genomics":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1tyP_Q3NRDksDSxLk7JOQBB-ROqqN-dqZVK6I3HZvpTHjX5Q1i/?limit=100&utm_campaign=pubmed-2&fc=20210415124733"},
+    "stanford":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1f1dJwlpLErIjn2ZoRRJB1J_KUNSf155ij5ulhvcmmeo-QWgpT/?limit=100&utm_campaign=pubmed-2&fc=20210415130057"},
+    "nhr":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1dSaW42H3lP37Kc_ElhakcHUr43yaHMxeJEMax91bss1E6gQ8j/?limit=100&utm_campaign=pubmed-2&fc=20210415131515"},
+    "covid19":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1vm7YKsZZUUonjgCRs9f_cbRxstX0U_NH7hBAk6IiLCUEVNkEF/?limit=100&utm_campaign=pubmed-2&fc=20210415132645"},
+    "supplements":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/18MzaitFJ9iXLrFVyaEyOXbPbXP-K_F4PEZLeYw9x9wBUF2wjk/?limit=50&utm_campaign=pubmed-2&fc=20200708124003"},
+    "techcrunch":{
+        "type":"techcrunch",
+        "url":"https://techcrunch.com/feed/"},
+    "startups":{
+        "type":"techcrunch",
+        "url":"https://techcrunch.com/startups/feed/"},
+    "nature_blog":{
+        "type":"nature_blog",
+        "url":"http://feeds.nature.com/nature/rss/current?x=1"
+    },
+    "genomeweb":{
+        "type":"genomeweb",
+        "url":"https://www.genomeweb.com/breaking-news/rss"
+    },
+    "bioitworld":{
+        "type":"bioitworld",
+        "url":"https://www.bio-itworld.com/feeds/BioIT_WorldNews_RSS"
+    },
+    "stanford":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1TuHRxU62XQv0joP9m4YxJoOJgd6ttMxTnxNdgPseZjwteRssh/?limit=100&utm_campaign=pubmed-2&fc=20210427161140"
+    },
+    "unusual":{
+        "type":"pubmed",
+        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1xCFUMSbAMYatD8eKGfeJ_0ANNg4o9dwfarY2JtJxHVZbcrE-3/?limit=100&utm_campaign=pubmed-2&fc=20210427161648"
+    },
+    "pm_jobs":{
+        "type":"indeed",
+        "url":"https://rss.indeed.com/rss?q=as_and=it+project+manager&as_phr=&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=%24100%2C000%2B&radius=25&l=remote&fromage=1&limit=20&sort=&psf=advsrch&from=advancedsearch"
+    },
+    "cloud_jobs":{
+        "type":"indeed",
+        "url":"https://rss.indeed.com/rss?q=as_and=cloud+solutions+architect&as_phr=&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=%24100%2C000%2B&radius=25&l=remote&fromage=1&limit=20&sort=&psf=advsrch&from=advancedsearch"
+    },
+        "hot_jobs":{
+        "type":"indeed",
+        "url":"https://rss.indeed.com/rss?q=%28%22cloud+solutions+architect%22+or+%22security+architect%22+or+%22it+project+manager%22+or+aws+or+azure+or+cybersecurity%29+%24100%2C000%2B&l=remote&radius=25"
+    }
+    }
+#################################### Check content: ####################################
 
-#make a dist: python setup.py sdist
-# pip install twine
-# twine upload dist/*
+def valid_string(check_string,rejects=['404','error']):
+    if (any(term in check_string for term in rejects)): return False
+    return True
+
+def valid_post(post,rejects = ['404','error']):
+    post['title'] = utils.clean_text(post['title'])
+    return (valid_string(post['title'],rejects) and valid_string(post['url'],rejects))
+
+#################################### Generic RSS Feed: ####################################
+def format_rss_result(ref):
+    if('url' not in ref):
+        if('link' in ref):
+            ref['url'] = ref['link']
+        else:
+            print("Can't identify URL in post.")
+            raise Exception("Invalid post")
+    try:
+        ref['url'] = utils.clean_url(ref['url'])
+    except:
+        ref['url'] = ref['url']
+    ref['title'] = utils.clean_text(ref['title'])
+    tweet = utils.format_tweet(ref['title'],ref['url'])['tweet']
+    return {
+        'tweet':tweet,
+        'title':ref['title'],
+        'summary':utils.clean_text(ref['summary']),
+        'url':ref['url']
+        }
+
+############################## Nature Blog: ##############################
+def format_nature_blog_result(ref):
+    full_url = utils.clean_url(ref['id'])
+    ref['title'] = utils.clean_text(ref['title'])
+    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    return {
+        'tweet':tweet,
+        'title':ref['title'],
+        'summary':utils.clean_text(ref['summary']),
+        'url':full_url
+        }
+
+#################################### BioITWorld: ####################################
+def format_bioitworld_result(ref):
+    full_url = utils.clean_url(ref['link'])
+    ref['title'] = utils.clean_text(ref['title'])
+    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    return {
+        'tweet':tweet,
+        'title':ref['title'],
+        'summary':utils.clean_text(ref['summary']),
+        'url':full_url
+        }
+
+#################################### GenomeWeb: ####################################
+def format_genomeweb_result(ref):
+    full_url = utils.clean_url(ref['link'])
+    ref['title'] = utils.clean_text(ref['title'])
+    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    return {
+        'tweet':tweet,
+        'title':ref['title'],
+        'summary':utils.clean_text(ref['summary']),
+        'url':full_url
+        }
+
+#################################### Techcrunch: ####################################
+def format_techcrunch_result(ref):
+    full_url = utils.clean_url(ref['link'])
+    print("Updated URL for post: "+full_url)
+    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    return {
+            'tweet':tweet,
+            'title':utils.clean_text(ref['title']),
+            'summary':utils.clean_text(ref['summary']),
+            'url':full_url
+        }
+
+#################################### Pubmed: ####################################
+def format_pubmed_result(ref):
+    full_url = """https://doi.org/{}""".format(ref['dc_identifier'][4:])
+    full_url = utils.clean_url(full_url)
+    print("Updated URL for post: "+full_url)
+    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    return {
+            'tweet':tweet,
+            'title':utils.clean_text(ref['title']),
+            'summary':utils.clean_text(ref['summary']),
+            'url':full_url
+        }
+
+#################################### Indeed: ####################################
+def format_indeed_result(ref):
+    # print("Found result: "+ref['title'])
+    url = utils.clean_url(ref['link'])
+    # print(url)
+    # print("Getting company URL")
+    # company_url = url
+    # print("Getting links...")
+    extractor = URLExtract()
+    req = requests.get(url)
+    page = req.text
+    urls = extractor.find_urls(page)
+    # links = utils.get_links(url)
+    links = urls
+    print("Got links.")
+    for link in links:
+        if("indeed.com/rc/clk" in link):
+            company_url = utils.unshorten(link)
+            break
+    ref['url'] = company_url
+    title = utils.clean_text(ref['title'])
+    intro="👍 JOB ALERT👍 "
+    tweet = utils.format_tweet(title,ref['url'],"",intro)['tweet']
+    return {
+        'tweet':tweet,
+        'title':title,
+        'summary':utils.clean_text(ref['description']),
+        'url':ref['url'],
+        'source':ref['source']
+        }
+#################################### Get Result: ####################################
+@func_set_timeout(300)
+def format_result(res,res_type='rss'):
+    if(res_type == 'pubmed'): return(format_pubmed_result(res))
+    if(res_type == 'techcrunch'): return(format_techcrunch_result(res))
+    if(res_type == 'nature_blog'): return(format_nature_blog_result(res))
+    if(res_type == 'genomeweb'): return(format_genomeweb_result(res))
+    if(res_type == 'bioitworld'): return(format_bioitworld_result(res))
+    if(res_type == 'indeed'): return(format_indeed_result(res))
+    else: return(format_rss_result(res))
+
+def get_rss(url,count=1,rss_type='rss'):
+    rejects = ['404','error']
+    NewsFeed = feedparser.parse(url)
+    #For single post, select randomly from posts
+    tries = 0
+    if(count <=1):
+        while(tries < max_tries):
+            tries += 1
+            post = random.choice(NewsFeed.entries)
+            print("Getting RSS result. Attempt: %i"%(tries))
+            # try:
+                # post = format_rss_result(post)
+            post = format_result(post,rss_type)
+                # post = func_timeout(10,format_result, args=(post,rss_type))
+            if(valid_post(post),rejects): 
+                # res = format_result(post)
+                res = post
+                return res
+            # except FunctionTimedOut:
+            #     print("Timed out. Rejecting post.")
+            # except Exception as e:
+            #     print(e)
+            #     print("Invalid post.")
+    else:
+        res = []
+        for post in NewsFeed.entries:
+            try:
+                post = format_result(post,rss_type)
+                # post = format_rss_result(post)
+                if(valid_post(post,rejects)): 
+                    res.append(post)
+                    print("Retrieved: %i of %i posts"%(len(res),count))
+                if(len(res)>=count):
+                    return res
+            except FunctionTimedOut:
+                print("Timed out. Rejecting post.")
+            except Exception as e:
+                print(e)
+                print("Invalid post") 
+            if(len(res)>=count): return res
+    raise Exception("[Error] Unable to get article.")
+
+#################################### Accessor functions: ####################################
+#match feed names
+def get_feed(feed_name,count=1):
+    if(feed_name not in default_feeds):
+        return get_url(feed_name)
+    #get_rss(url,type)
+    url = default_feeds[feed_name]['url']
+    if("pubmed" in default_feeds[feed_name]['type']): return get_rss(url,count,'pubmed')
+    elif("techcrunch" in default_feeds[feed_name]['type']): return get_rss(url,count,'techcrunch')
+    elif("nature_blog" in default_feeds[feed_name]['type']): return get_rss(url,count,'nature_blog')
+    elif("genomeweb" in default_feeds[feed_name]['type']): return get_rss(url,count,'genomeweb')
+    elif("bioitworld" in default_feeds[feed_name]['type']): return get_rss(url,count,'bioitworld')
+    elif("indeed" in default_feeds[feed_name]['type']): return get_rss(url,count,'indeed')
+    
+#match something in the url. Less reliable but more flexible
+def get_url(url,count=1):
+    #get post based on source
+    if("pubmed" in url): return get_rss(url,count,'pubmed')#return get_pubmed(url,count)
+    elif("techcrunch" in url): return get_rss(url,count,'techcrunch')#return get_techcrunch(url,count)
+    elif("nature.com" in url): return get_rss(url,count,'nature.com')#return get_nature_blog(url,count)
+    elif("genomeweb" in url): return get_rss(url,count,'genomeweb')#return get_genomeweb(url,count)
+    elif("bio-itworld" in url): return get_rss(url,count,'bio-itworld')#return get_bioitworld(url,count)
+    elif("indeed" in url): return get_rss(url,count,'indeed')#return get_bioitworld(url,count)
+    else: return get_rss(url,count,'rss')
+
+# Upodated function to allow feed name or just a url
+def get_update(feed_name = "techcrunch",c=1,*args,**kwargs):
+    if('count' in kwargs): #set count if specified by keyword, else default to c arg
+        count = kwargs['count']
+    elif(c):
+        count = c
+    else:
+        count = 1
+    print("Getting %i links."%(count))
+    if('url' in kwargs): #if url specified then get url
+        print("URL specified in parameters.")
+        return get_url(kwargs['url'],count)
+    elif('name' in kwargs):
+        print("Using preconfigured feed.")
+        return get_feed(kwargs['name'].lower(),count)
+    elif(feed_name.lower() in default_feeds): #if
+        print("Using preconfigured feed.")
+        return get_feed(feed_name.lower(),count)
+    else: #else try to get as url
+        print("Using URL")
+        print("Getting RSS based on url: "+feed_name)
+        return get_url(feed_name,count)
+
+def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
+    return get_update(feed_name,c,args,kwargs)
+
+if __name__ == "__main__":
+    print("tw")
+    # url="https://www.engadget.com/rss.xml" #test of non-specific rss
+    res = get_update("hot_jobs")
+    # res = get_rss(url,1)
+    # res = get_multiple(count=3,url=feeds['techcrunch']['url'])
+    # print(res['tweet']
+    # res = get_multiple("techcrunch",3)
+    # res = get_url(feeds['bioitworld']['url'])
+    print(res)
