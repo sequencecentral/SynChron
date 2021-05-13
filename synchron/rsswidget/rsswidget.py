@@ -173,6 +173,8 @@ def format_pubmed_result(ref,bebukey=None):
 
 #################################### Indeed: ####################################
 def format_indeed_result(ref,bebukey=None):
+    print("Formatting indeeed result.")
+    print("bebukey "+bebukey)
     url = utils.clean_url(ref['link'])
     extractor = URLExtract()
     req = requests.get(url)
@@ -182,13 +184,18 @@ def format_indeed_result(ref,bebukey=None):
     print("Got links.")
     for link in links:
         if("indeed.com/rc/clk" in link):
-            company_url = utils.unshorten(link)
+            try:
+                company_url = utils.unshorten(link)
+            except:
+                print("Rejecting link: "+link)
             break
     if(not company_url): raise Exception("No links found")
     ref['url'] = company_url
-    title = utils.clean_text(ref['title'])
+    title = utils.clean_text(ref['title']+" "+ref['summary'])
+    print("title: "+title)
     intro="👍 JOB ALERT👍 "
     tweet = utils.format_tweet(title,ref['url'],"",intro,bebukey)['tweet']
+    # print(tweet)
     return {
         'tweet':tweet,
         'title':title,
@@ -199,15 +206,17 @@ def format_indeed_result(ref,bebukey=None):
 #################################### Get Result: ####################################
 @func_set_timeout(300)
 def format_result(res,res_type='rss',bebukey=None):
-    if(res_type == 'pubmed'): return(format_pubmed_result(res),bebukey)
-    if(res_type == 'techcrunch'): return(format_techcrunch_result(res),bebukey)
-    if(res_type == 'nature_blog'): return(format_nature_blog_result(res),bebukey)
-    if(res_type == 'genomeweb'): return(format_genomeweb_result(res),bebukey)
-    if(res_type == 'bioitworld'): return(format_bioitworld_result(res),bebukey)
-    if(res_type == 'indeed'): return(format_indeed_result(res),bebukey)
-    else: return(format_rss_result(res),bebukey)
+    # print(bebukey)
+    if(res_type == 'pubmed'): return(format_pubmed_result(res,bebukey))
+    if(res_type == 'techcrunch'): return(format_techcrunch_result(res,bebukey))
+    if(res_type == 'nature_blog'): return(format_nature_blog_result(res,bebukey))
+    if(res_type == 'genomeweb'): return(format_genomeweb_result(res,bebukey))
+    if(res_type == 'bioitworld'): return(format_bioitworld_result(res,bebukey))
+    if(res_type == 'indeed'): return(format_indeed_result(res,bebukey))
+    else: return(format_rss_result(res,bebukey))
 
 def get_rss(url,count=1,rss_type='rss',bebukey=None):
+    # print(bebukey)
     rejects = ['404','error']
     NewsFeed = feedparser.parse(url)
     #For single post, select randomly from posts
@@ -219,6 +228,7 @@ def get_rss(url,count=1,rss_type='rss',bebukey=None):
             print("Getting RSS result. Attempt: %i"%(tries))
             try:
                 post = format_result(post,rss_type,bebukey)
+                print(post)
                 if(valid_post(post),rejects): 
                     res = post
                     return res

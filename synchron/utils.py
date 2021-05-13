@@ -11,7 +11,7 @@ import urlextract
 from urlextract import URLExtract
 from urllib.request import Request, urlopen
 ua = "Mozilla Firefox Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0"
-max_len = 220 #280 max
+max_len = 210 #280 max
 
 ########################################## GENERAL: ##########################################
 def get_item(lis):
@@ -60,7 +60,7 @@ def format_tweet(ti,url,summary="",intro="",bebukey=None):
     max_url = max_len - title_len #shorten url based on title len
     url = shorten_link(url,max_url,bebukey)
     url_len = len(url)
-    max_title = max_len - url_len-3
+    max_title = max_len - url_len-6
     truncated=''
     if(len(title)>max_title):
         truncated='...'
