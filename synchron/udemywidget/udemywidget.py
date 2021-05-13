@@ -6,6 +6,7 @@ import urllib.request
 import re
 import nltk
 import pyshorteners
+import json
 from urlextract import URLExtract
 import urllib.request
 from urllib.request import Request, urlopen
@@ -72,7 +73,7 @@ def get_udemy_link(url):
                 print("Unable to extract info from url: "+str(url))
 
 @func_set_timeout(10)
-def get_udemy_post(red):
+def get_udemy_post(red,bebukey=None):
     max_len = 240
     utags = "#udemyfreebies #udemycoupon #udemy #udemyfree #udemysale #udemyflashsale"
     url = red.url
@@ -81,7 +82,7 @@ def get_udemy_post(red):
     title_len = len(title)
     max_url = max_len-title_len #shorten url based on title len
     try:
-        url = utils.shorten_link(udemy['url'],max_url)[0:max_len]
+        url = utils.shorten_link(udemy['url'],max_url,bebukey=bebukey)
     except:
         print("Unable to shorten url")
     url_len = len(url)
@@ -107,28 +108,28 @@ def get_udemy_post(red):
     udemy['tweet_2']=post_2
     return udemy
 
-def get_reddit_link(ci, cs, subreddit="udemyfreebies"):
+def get_reddit_link(ci, cs, subreddit="udemyfreebies",bebukey=None):
     reddit = praw.Reddit(client_id=ci,client_secret=cs, user_agent=default_ua)
     links = reddit.subreddit(subreddit).hot(limit=100)
     links = [l for l in links]
     pick_link = random.choice(links)
     return(pick_link)
 
-def get_reddit_all(ci,cs,subreddit="udemyfreebies"):
+def get_reddit_all(ci,cs,subreddit="udemyfreebies",bebukey=None):
     reddit = praw.Reddit(client_id=ci,client_secret=cs, user_agent=default_ua)
     links = reddit.subreddit(subreddit).hot(limit=100)
     links = [l for l in links]
     # pick_link = random.choice(links)
     return(links)
 
-def get_update(client_id, client_secret,subreddit="udemyfreebies"):
+def get_update(client_id, client_secret,subreddit="udemyfreebies",bebukey=None):
     max_tries = 5
     attempt = 0
     while(attempt<max_tries):
         attempt+=1
         try:
             red = get_reddit_link(client_id,client_secret,subreddit)
-            post = get_udemy_post(red)
+            post = get_udemy_post(red,bebukey=bebukey)
             if('english' in post['language'].lower()):
                 return post
                 break
@@ -140,14 +141,14 @@ def get_update(client_id, client_secret,subreddit="udemyfreebies"):
             print(e)
             print("Encountered problem getting link. Attempt: "+str(attempt))
 
-def get_multiple(client_id, client_secret, post_number=5):
+def get_multiple(client_id, client_secret, post_number=5,bebukey=None):
     posts = get_reddit_all(client_id,client_secret)
     tweets = []
     for red in posts:
         if(len(tweets)<post_number):
             try:
                 print("Post: %s"%(red.title))
-                post = get_udemy_post(red)
+                post = get_udemy_post(red,bebukey=bebukey)
                 if('english' in post['language']):
                     tweets.append(post)
                 else:
@@ -181,10 +182,10 @@ def test():
                 print("coupon: %s"%(coupon))
 
 if __name__ == "__main__":
-    import env
-    print(get_update(env.client_id,env.client_secret))
+    with open("env.json",'r') as f:
+        env = json.load(f)
+    # posts = get_multiple(env['REDDIT_CLIENT_ID'],env['REDDIT_CLIENT_SECRET'],'useragent',"technology",5,bebukey=env['BEBUKEY'])
+    print(get_update(env['REDDIT_CLIENT_ID'],env['REDDIT_CLIENT_SECRET'],bebukey=env['BEBUKEY']))
     # posts = get_multiple(env.client_id,env.client_secret,2)
     # print("Posts: %d"%(len(posts)))
     # print(posts)
-
-    # test()

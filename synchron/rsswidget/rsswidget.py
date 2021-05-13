@@ -314,7 +314,7 @@ def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
 if __name__ == "__main__":
     print("tw")
     # url="https://www.engadget.com/rss.xml" #test of non-specific rss
-    res = get_update("hot_jobs",bebukey="AIzaSyClYw3y1s7TeCPCptrWw1inyEs-9BDPBBw")
+    res = get_update("hot_jobs")
     # res = get_rss(url,1)
     # res = get_multiple(count=3,url=feeds['techcrunch']['url'])
     # print(res['tweet']

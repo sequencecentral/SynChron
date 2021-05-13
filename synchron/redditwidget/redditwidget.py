@@ -5,8 +5,8 @@ import random
 import urllib
 import urllib.request
 import re
-import nltk
-import pyshorteners
+# import nltk
+import json
 from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
 
 # from .. import utils
@@ -37,13 +37,9 @@ def check_reddit_post(post):
         print("Going with reddit post: %s"%(post.title))
         return True
 
-
-def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,count=1):
-    reddit = praw.Reddit(
-        client_id=ci,
-        client_secret=cs,
-        user_agent=ua
-    )
+def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,count=1,bebukey=None):
+    # print(bebukey)
+    reddit = praw.Reddit(client_id=ci,client_secret=cs,user_agent=ua)
     #keep trying posts until a good post is obtained
     attempts = 0
     post = False
@@ -67,7 +63,8 @@ def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,cou
                 post = random.choice(hot_links)
                 if(check_reddit_post(post)): 
                     try:
-                        formatted = utils.format_tweet(post.title,post.url)
+                        print("Formatting post")
+                        formatted = utils.format_tweet(ti=post.title,url=post.url,summary="",intro="",bebukey=bebukey)
                         return formatted
                     except FunctionTimedOut:
                         print("Timed out. Rejecting post.")
@@ -81,7 +78,8 @@ def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,cou
                 post = hot_links.pop(0)
                 if(check_reddit_post(post)): 
                     try:
-                        posts.append(utils.format_tweet(post.title,post.url))
+                        formatted = utils.format_tweet(ti=post.title,url=post.url,summary="",intro="",bebukey=bebukey)
+                        posts.append(formatted)
                     except FunctionTimedOut:
                         print("Timed out. Rejecting post.")
                     except Exception as e:
@@ -93,23 +91,25 @@ def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,cou
 
             return posts
 
-def get_update(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",max_attempts=5):
+def get_update(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",max_attempts=5,bebukey=None):
     print("Getting Reddit post.")
-    post = get_reddit_links(client_id,client_secret,user_agent,subreddit,max_attempts)
+    post = get_reddit_links(client_id,client_secret,user_agent,subreddit,max_attempts,bebukey)
     if(not post): raise Exception("No post found!")
     return post
 
-def get_multiple(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",count=5):
+def get_multiple(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",count=5,bebukey=None):
     print("Getting Reddit post.")
-    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,5,count)
+    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,5,count,bebukey)
     if(not posts): raise Exception("No posts found!")
     return posts
 
 if __name__ == "__main__":
-    import env
+    # import env
+    with open("env.json",'r') as f:
+        env = json.load(f)
     SUBREDDIT= 'science technology cybersecurity'
     user_agent="Python"
     # print(get_update(env.client_id,env.client_secret,env.user_agent,SUBREDDIT))
-    posts = get_multiple(env.client_id,env.client_secret,env.user_agent,"technology",5)
+    posts = get_multiple(env['REDDIT_CLIENT_ID'],env['REDDIT_CLIENT_SECRET'],'useragent',"technology",5,bebukey=env['BEBUKEY'])
     print("Posts: %d"%(len(posts)))
     print(posts)
