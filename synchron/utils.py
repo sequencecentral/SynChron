@@ -107,10 +107,13 @@ def shorten_link(url="",max_len=100,bebukey=None):
         return url
     try:
         print("Getting bebu.be short link")
-        return bebube(url,bebukey)
+        short = bebube(url,bebukey)
+        print(short)
+        return short
     except:
         print("Getting is.gd link")
-        return s.isgd.short(url)
+        short = s.isgd.short(url)
+        return short
 
 def follow_link(url,term = "udemy.com",level = 0,max_levels = 2):
     print("Checking url for term: "+url)
