@@ -68,7 +68,7 @@ def format_tweet(ti,url,summary="",intro="",bebukey=None):
     title_len = len(title)
     summary = clean_text(summary)
     return {
-        'tweet':"""{}{} {}""".format(title,truncated,url)[0:max_len],
+        'tweet':"""{}{} {}""".format(title,truncated,url),
         'title':title,
         'summary':summary,
         'url':url
