@@ -88,7 +88,7 @@ def valid_post(post,rejects = ['404','error']):
     return (valid_string(post['title'],rejects) and valid_string(post['url'],rejects))
 
 #################################### Generic RSS Feed: ####################################
-def format_rss_result(ref):
+def format_rss_result(ref,bebukey=None):
     if('url' not in ref):
         if('link' in ref):
             ref['url'] = ref['link']
@@ -100,7 +100,7 @@ def format_rss_result(ref):
     except:
         ref['url'] = ref['url']
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],ref['url'])['tweet']
+    tweet = utils.format_tweet(ref['title'],ref['url'],bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -109,10 +109,10 @@ def format_rss_result(ref):
         }
 
 ############################## Nature Blog: ##############################
-def format_nature_blog_result(ref):
+def format_nature_blog_result(ref,bebukey):
     full_url = utils.clean_url(ref['id'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -121,10 +121,10 @@ def format_nature_blog_result(ref):
         }
 
 #################################### BioITWorld: ####################################
-def format_bioitworld_result(ref):
+def format_bioitworld_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -133,10 +133,10 @@ def format_bioitworld_result(ref):
         }
 
 #################################### GenomeWeb: ####################################
-def format_genomeweb_result(ref):
+def format_genomeweb_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -145,10 +145,10 @@ def format_genomeweb_result(ref):
         }
 
 #################################### Techcrunch: ####################################
-def format_techcrunch_result(ref):
+def format_techcrunch_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     print("Updated URL for post: "+full_url)
-    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
@@ -157,11 +157,11 @@ def format_techcrunch_result(ref):
         }
 
 #################################### Pubmed: ####################################
-def format_pubmed_result(ref):
+def format_pubmed_result(ref,bebukey=None):
     full_url = """https://doi.org/{}""".format(ref['dc_identifier'][4:])
     full_url = utils.clean_url(full_url)
     print("Updated URL for post: "+full_url)
-    tweet = utils.format_tweet(ref['title'],full_url)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
@@ -170,18 +170,12 @@ def format_pubmed_result(ref):
         }
 
 #################################### Indeed: ####################################
-def format_indeed_result(ref):
-    # print("Found result: "+ref['title'])
+def format_indeed_result(ref,bebukey=None):
     url = utils.clean_url(ref['link'])
-    # print(url)
-    # print("Getting company URL")
-    # company_url = url
-    # print("Getting links...")
     extractor = URLExtract()
     req = requests.get(url)
     page = req.text
     urls = extractor.find_urls(page)
-    # links = utils.get_links(url)
     links = urls
     print("Got links.")
     for link in links:
@@ -191,7 +185,7 @@ def format_indeed_result(ref):
     ref['url'] = company_url
     title = utils.clean_text(ref['title'])
     intro="👍 JOB ALERT👍 "
-    tweet = utils.format_tweet(title,ref['url'],"",intro)['tweet']
+    tweet = utils.format_tweet(title,ref['url'],"",intro,bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':title,
@@ -201,16 +195,16 @@ def format_indeed_result(ref):
         }
 #################################### Get Result: ####################################
 @func_set_timeout(300)
-def format_result(res,res_type='rss'):
-    if(res_type == 'pubmed'): return(format_pubmed_result(res))
-    if(res_type == 'techcrunch'): return(format_techcrunch_result(res))
-    if(res_type == 'nature_blog'): return(format_nature_blog_result(res))
-    if(res_type == 'genomeweb'): return(format_genomeweb_result(res))
-    if(res_type == 'bioitworld'): return(format_bioitworld_result(res))
-    if(res_type == 'indeed'): return(format_indeed_result(res))
-    else: return(format_rss_result(res))
+def format_result(res,res_type='rss',bebukey=None):
+    if(res_type == 'pubmed'): return(format_pubmed_result(res),bebukey)
+    if(res_type == 'techcrunch'): return(format_techcrunch_result(res),bebukey)
+    if(res_type == 'nature_blog'): return(format_nature_blog_result(res),bebukey)
+    if(res_type == 'genomeweb'): return(format_genomeweb_result(res),bebukey)
+    if(res_type == 'bioitworld'): return(format_bioitworld_result(res),bebukey)
+    if(res_type == 'indeed'): return(format_indeed_result(res),bebukey)
+    else: return(format_rss_result(res),bebukey)
 
-def get_rss(url,count=1,rss_type='rss'):
+def get_rss(url,count=1,rss_type='rss',bebukey=None):
     rejects = ['404','error']
     NewsFeed = feedparser.parse(url)
     #For single post, select randomly from posts
@@ -221,11 +215,8 @@ def get_rss(url,count=1,rss_type='rss'):
             post = random.choice(NewsFeed.entries)
             print("Getting RSS result. Attempt: %i"%(tries))
             try:
-                # post = format_rss_result(post)
-                post = format_result(post,rss_type)
-                # post = func_timeout(10,format_result, args=(post,rss_type))
+                post = format_result(post,rss_type,bebukey)
                 if(valid_post(post),rejects): 
-                    # res = format_result(post)
                     res = post
                     return res
             except FunctionTimedOut:
@@ -237,8 +228,7 @@ def get_rss(url,count=1,rss_type='rss'):
         res = []
         for post in NewsFeed.entries:
             try:
-                post = format_result(post,rss_type)
-                # post = format_rss_result(post)
+                post = format_result(post,rss_type,bebukey)
                 if(valid_post(post,rejects)): 
                     res.append(post)
                     print("Retrieved: %i of %i posts"%(len(res),count))
@@ -254,27 +244,27 @@ def get_rss(url,count=1,rss_type='rss'):
 
 #################################### Accessor functions: ####################################
 #match feed names
-def get_feed(feed_name,count=1):
+def get_feed(feed_name,count=1,bebukey=None):
     if(feed_name not in default_feeds):
         return get_url(feed_name)
     #get_rss(url,type)
     url = default_feeds[feed_name]['url']
-    if("pubmed" in default_feeds[feed_name]['type']): return get_rss(url,count,'pubmed')
-    elif("techcrunch" in default_feeds[feed_name]['type']): return get_rss(url,count,'techcrunch')
-    elif("nature_blog" in default_feeds[feed_name]['type']): return get_rss(url,count,'nature_blog')
-    elif("genomeweb" in default_feeds[feed_name]['type']): return get_rss(url,count,'genomeweb')
-    elif("bioitworld" in default_feeds[feed_name]['type']): return get_rss(url,count,'bioitworld')
-    elif("indeed" in default_feeds[feed_name]['type']): return get_rss(url,count,'indeed')
+    if("pubmed" in default_feeds[feed_name]['type']): return get_rss(url,count,'pubmed',bebukey)
+    elif("techcrunch" in default_feeds[feed_name]['type']): return get_rss(url,count,'techcrunch',bebukey)
+    elif("nature_blog" in default_feeds[feed_name]['type']): return get_rss(url,count,'nature_blog',bebukey)
+    elif("genomeweb" in default_feeds[feed_name]['type']): return get_rss(url,count,'genomeweb',bebukey)
+    elif("bioitworld" in default_feeds[feed_name]['type']): return get_rss(url,count,'bioitworld',bebukey)
+    elif("indeed" in default_feeds[feed_name]['type']): return get_rss(url,count,'indeed',bebukey)
     
 #match something in the url. Less reliable but more flexible
-def get_url(url,count=1):
+def get_url(url,count=1,bebukey=None):
     #get post based on source
-    if("pubmed" in url): return get_rss(url,count,'pubmed')#return get_pubmed(url,count)
-    elif("techcrunch" in url): return get_rss(url,count,'techcrunch')#return get_techcrunch(url,count)
-    elif("nature.com" in url): return get_rss(url,count,'nature.com')#return get_nature_blog(url,count)
-    elif("genomeweb" in url): return get_rss(url,count,'genomeweb')#return get_genomeweb(url,count)
-    elif("bio-itworld" in url): return get_rss(url,count,'bio-itworld')#return get_bioitworld(url,count)
-    elif("indeed" in url): return get_rss(url,count,'indeed')#return get_bioitworld(url,count)
+    if("pubmed" in url): return get_rss(url,count,'pubmed',bebukey)#return get_pubmed(url,count)
+    elif("techcrunch" in url): return get_rss(url,count,'techcrunch',bebukey)#return get_techcrunch(url,count)
+    elif("nature.com" in url): return get_rss(url,count,'nature.com',bebukey)#return get_nature_blog(url,count)
+    elif("genomeweb" in url): return get_rss(url,count,'genomeweb',bebukey)#return get_genomeweb(url,count)
+    elif("bio-itworld" in url): return get_rss(url,count,'bio-itworld',bebukey)#return get_bioitworld(url,count)
+    elif("indeed" in url): return get_rss(url,count,'indeed',bebukey)#return get_bioitworld(url,count)
     else: return get_rss(url,count,'rss')
 
 # Upodated function to allow feed name or just a url
@@ -285,28 +275,33 @@ def get_update(feed_name = "techcrunch",c=1,*args,**kwargs):
         count = c
     else:
         count = 1
+    if('bebukey' in kwargs):
+        bebukey = kwargs['bebukey']
+    else:
+        bebukey = None
     print("Getting %i links."%(count))
     if('url' in kwargs): #if url specified then get url
         print("URL specified in parameters.")
-        return get_url(kwargs['url'],count)
+        return get_url(kwargs['url'],count,bebukey)
     elif('name' in kwargs):
         print("Using preconfigured feed.")
-        return get_feed(kwargs['name'].lower(),count)
+        return get_feed(kwargs['name'].lower(),count,bebukey)
     elif(feed_name.lower() in default_feeds): #if
         print("Using preconfigured feed.")
-        return get_feed(feed_name.lower(),count)
+        return get_feed(feed_name.lower(),count,bebukey)
     else: #else try to get as url
         print("Using URL")
         print("Getting RSS based on url: "+feed_name)
-        return get_url(feed_name,count)
+        return get_url(feed_name,count,bebukey)
 
+#managed to generalize the get_update function, but keeping this one for compatibility
 def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
     return get_update(feed_name,c,args,kwargs)
 
 if __name__ == "__main__":
     print("tw")
     # url="https://www.engadget.com/rss.xml" #test of non-specific rss
-    res = get_update("hot_jobs")
+    res = get_update("hot_jobs",bebukey="AIzaSyClYw3y1s7TeCPCptrWw1inyEs-9BDPBBw")
     # res = get_rss(url,1)
     # res = get_multiple(count=3,url=feeds['techcrunch']['url'])
     # print(res['tweet']

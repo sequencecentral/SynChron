@@ -53,11 +53,11 @@ def clean_text(str):
     str = re.sub(r'[^a-zA-Z0-9-_#@%&!.;:,| ]','', str)
     return str
 
-def format_tweet(ti,url,summary="",intro=""):
+def format_tweet(ti,url,summary="",intro="",bebukey=None):
     title = intro+clean_text(ti)
     title_len = len(title)
     max_url = max_len - title_len #shorten url based on title len
-    url = shorten_link(url,max_url)
+    url = shorten_link(url,max_url,bebukey)
     url_len = len(url)
     max_title = max_len - url_len-3
     truncated=''
@@ -91,13 +91,21 @@ def unshorten(url):
     req = Request(url, headers={'User-Agent': ua})
     url= urllib.request.urlopen(req,context=ssl._create_unverified_context()).url
     return url
-    
-def shorten_link(url="",max_len=100):
+
+def bebube(link,apikey):
+    params={"longDynamicLink": "https://bebu.be/?link="+link, "suffix": { "option": "SHORT" } }
+    url = """https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key={}""".format(apikey)
+    r = requests.post(url, json=params).json()['shortLink']
+    return(r)
+
+def shorten_link(url="",max_len=100,bebukey=None):
     # print("Shortening link: "+url)
     url = clean_url(url)
     s = pyshorteners.Shortener()
     if(len(url)< max_len):
         return url
+    elif(bebukey):
+        return bebube(url,bebukey)
     else:
         return s.isgd.short(url)
 
