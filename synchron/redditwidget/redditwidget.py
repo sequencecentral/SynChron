@@ -99,7 +99,7 @@ def get_update(client_id = "", client_secret = "", user_agent="Mozilla",subreddi
 
 def get_multiple(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",count=5,bebukey=None):
     print("Getting Reddit post.")
-    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,count,count,bebukey)
+    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,5,count,bebukey)
     if(not posts): raise Exception("No posts found!")
     return posts
 
