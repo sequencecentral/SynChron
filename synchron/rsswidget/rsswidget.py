@@ -246,7 +246,7 @@ def get_rss(url,count=1,rss_type='rss',bebukey=None):
 #match feed names
 def get_feed(feed_name,count=1,bebukey=None):
     if(feed_name not in default_feeds):
-        return get_url(feed_name)
+        return get_url(feed_name,bebukey)
     #get_rss(url,type)
     url = default_feeds[feed_name]['url']
     if("pubmed" in default_feeds[feed_name]['type']): return get_rss(url,count,'pubmed',bebukey)
@@ -301,7 +301,7 @@ def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
 if __name__ == "__main__":
     print("tw")
     # url="https://www.engadget.com/rss.xml" #test of non-specific rss
-    res = get_update("hot_jobs",bebukey="AIzaSyClYw3y1s7TeCPCptrWw1inyEs-9BDPBBw")
+    res = get_update("hot_jobs")
     # res = get_rss(url,1)
     # res = get_multiple(count=3,url=feeds['techcrunch']['url'])
     # print(res['tweet']

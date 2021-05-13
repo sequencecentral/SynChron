@@ -52,7 +52,7 @@ python-dotenv==0.15.0
 python-jwt==2.0.1
 pytz==2021.1
 PyYAML==5.4.1
-quotewidget @ git+https://github.com/sequencecentral/QuoteWidget.git@feef076822ac7cae2e0f143668b70b7ea5c813fa
+# quotewidget @ git+https://github.com/sequencecentral/QuoteWidget.git@feef076822ac7cae2e0f143668b70b7ea5c813fa
 readme-renderer==29.0
 regex==2021.4.4
 requests==2.11.1
@@ -65,8 +65,7 @@ sgmllib3k==1.0.0
 six==1.15.0
 soupsieve==2.2.1
 sumy==0.8.1
-SynChron==1.0.10
-Synchronicity @ file:///Volumes/Box-3/Synchronicity
+SynChron==1.0.13
 tinysegmenter==0.3
 tldextract==3.1.0
 tqdm==4.60.0

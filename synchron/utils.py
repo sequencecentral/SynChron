@@ -40,6 +40,7 @@ def strip_tags(html):
     text = s.get_data()
     return text
 
+
 #strip unicode escape codes and sub with '
 def strip_codes(str):
     return re.sub(r'\[?&#\d{4};\]?','\'',str)
@@ -104,9 +105,11 @@ def shorten_link(url="",max_len=100,bebukey=None):
     s = pyshorteners.Shortener()
     if(len(url)< max_len):
         return url
-    elif(bebukey):
+    try:
+        print("Getting bebu.be short link")
         return bebube(url,bebukey)
-    else:
+    except:
+        print("Getting is.gd link")
         return s.isgd.short(url)
 
 def follow_link(url,term = "udemy.com",level = 0,max_levels = 2):
