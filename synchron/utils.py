@@ -51,7 +51,7 @@ def clean_text(str):
     #remove any HTML tags
     str = strip_tags(str)
     #remove non-alphanumeric characters
-    str = re.sub(r'[^a-zA-Z0-9-_#@%&!.;:,| ]','', str)
+    str = re.sub(r'[^a-zA-Z0-9-_#@%&!.;:*$,|\'\-() ]','', str)
     return str
 
 def format_tweet(ti,url,summary="",intro="",bebukey=None):

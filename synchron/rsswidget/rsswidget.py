@@ -174,7 +174,7 @@ def format_pubmed_result(ref,bebukey=None):
 #################################### Indeed: ####################################
 def format_indeed_result(ref,bebukey=None):
     print("Formatting indeeed result.")
-    print("bebukey "+bebukey)
+    # print("bebukey "+bebukey)
     url = utils.clean_url(ref['link'])
     extractor = URLExtract()
     req = requests.get(url)
@@ -191,7 +191,7 @@ def format_indeed_result(ref,bebukey=None):
             break
     if(not company_url): raise Exception("No links found")
     ref['url'] = company_url
-    title = utils.clean_text(ref['title']+" "+ref['summary'])
+    title = utils.clean_text(ref['title']+" | "+ref['summary'])
     print("title: "+title)
     intro="👍 JOB ALERT👍 "
     tweet = utils.format_tweet(title,ref['url'],"",intro,bebukey)['tweet']
@@ -228,7 +228,7 @@ def get_rss(url,count=1,rss_type='rss',bebukey=None):
             print("Getting RSS result. Attempt: %i"%(tries))
             try:
                 post = format_result(post,rss_type,bebukey)
-                print(post)
+                # print(post)
                 if(valid_post(post),rejects): 
                     res = post
                     return res
