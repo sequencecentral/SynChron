@@ -100,7 +100,7 @@ def format_rss_result(ref,bebukey=None):
     except:
         ref['url'] = ref['url']
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],ref['url'],bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],ref['url'],ref['summary'],"",bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -112,7 +112,7 @@ def format_rss_result(ref,bebukey=None):
 def format_nature_blog_result(ref,bebukey):
     full_url = utils.clean_url(ref['id'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -124,7 +124,7 @@ def format_nature_blog_result(ref,bebukey):
 def format_bioitworld_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,ref['title'],"",bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -136,7 +136,7 @@ def format_bioitworld_result(ref,bebukey=None):
 def format_genomeweb_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
     return {
         'tweet':tweet,
         'title':ref['title'],
@@ -148,7 +148,7 @@ def format_genomeweb_result(ref,bebukey=None):
 def format_techcrunch_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     print("Updated URL for post: "+full_url)
-    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
@@ -163,7 +163,7 @@ def format_pubmed_result(ref,bebukey=None):
     full_url = utils.clean_url(full_url)
     print("Updated URL for post: "+full_url)
     if(not valid_string(ref['title'],rejects)): raise Exception("Rejecting post: "+ref['title'])
-    tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
+    tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
