@@ -79,7 +79,7 @@ default_feeds = {
     }
 #################################### Check content: ####################################
 
-def valid_string(check_string,rejects=['404','error']):
+def valid_string(check_string,rejects=['404','error','retraction','correction','corrigendum','erratum']):
     if (any(term in check_string for term in rejects)): return False
     return True
 
@@ -158,9 +158,11 @@ def format_techcrunch_result(ref,bebukey=None):
 
 #################################### Pubmed: ####################################
 def format_pubmed_result(ref,bebukey=None):
+    rejects=['404','error','retraction','correction','corrigendum','erratum']
     full_url = """https://doi.org/{}""".format(ref['dc_identifier'][4:])
     full_url = utils.clean_url(full_url)
     print("Updated URL for post: "+full_url)
+    if(not valid_string(ref['title'],rejects)): raise Exception("Rejecting post: "+ref['title'])
     tweet = utils.format_tweet(ref['title'],full_url,bebukey)['tweet']
     return {
             'tweet':tweet,
@@ -182,6 +184,7 @@ def format_indeed_result(ref,bebukey=None):
         if("indeed.com/rc/clk" in link):
             company_url = utils.unshorten(link)
             break
+    if(not company_url): raise Exception("No links found")
     ref['url'] = company_url
     title = utils.clean_text(ref['title'])
     intro="👍 JOB ALERT👍 "
@@ -301,7 +304,7 @@ def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
 if __name__ == "__main__":
     print("tw")
     # url="https://www.engadget.com/rss.xml" #test of non-specific rss
-    res = get_update("hot_jobs")
+    res = get_update("hot_jobs",bebukey="AIzaSyClYw3y1s7TeCPCptrWw1inyEs-9BDPBBw")
     # res = get_rss(url,1)
     # res = get_multiple(count=3,url=feeds['techcrunch']['url'])
     # print(res['tweet']
