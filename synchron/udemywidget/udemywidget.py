@@ -82,7 +82,7 @@ def get_udemy_post(red,bebukey=None):
     title_len = len(title)
     max_url = max_len-title_len #shorten url based on title len
     try:
-        url = utils.shorten_link(udemy['url'],max_url,bebukey=bebukey)
+        url = utils.shorten_link(udemy['url'],max_url,bebukey)
     except:
         print("Unable to shorten url")
     url_len = len(url)
@@ -108,14 +108,14 @@ def get_udemy_post(red,bebukey=None):
     udemy['tweet_2']=post_2
     return udemy
 
-def get_reddit_link(ci, cs, subreddit="udemyfreebies",bebukey=None):
+def get_reddit_link(ci, cs, subreddit="udemyfreebies"):
     reddit = praw.Reddit(client_id=ci,client_secret=cs, user_agent=default_ua)
     links = reddit.subreddit(subreddit).hot(limit=100)
     links = [l for l in links]
     pick_link = random.choice(links)
     return(pick_link)
 
-def get_reddit_all(ci,cs,subreddit="udemyfreebies",bebukey=None):
+def get_reddit_all(ci,cs,subreddit="udemyfreebies"):
     reddit = praw.Reddit(client_id=ci,client_secret=cs, user_agent=default_ua)
     links = reddit.subreddit(subreddit).hot(limit=100)
     links = [l for l in links]
@@ -125,11 +125,12 @@ def get_reddit_all(ci,cs,subreddit="udemyfreebies",bebukey=None):
 def get_update(client_id, client_secret,subreddit="udemyfreebies",bebukey=None):
     max_tries = 5
     attempt = 0
+    if(len(subreddit)==0): subreddit = "udemyfreebies"
     while(attempt<max_tries):
         attempt+=1
         try:
             red = get_reddit_link(client_id,client_secret,subreddit)
-            post = get_udemy_post(red,bebukey=bebukey)
+            post = get_udemy_post(red,bebukey)
             if('english' in post['language'].lower()):
                 return post
                 break
@@ -148,7 +149,7 @@ def get_multiple(client_id, client_secret, post_number=5,bebukey=None):
         if(len(tweets)<post_number):
             try:
                 print("Post: %s"%(red.title))
-                post = get_udemy_post(red,bebukey=bebukey)
+                post = get_udemy_post(red,bebukey)
                 if('english' in post['language']):
                     tweets.append(post)
                 else:
