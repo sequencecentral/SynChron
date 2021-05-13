@@ -182,6 +182,7 @@ def format_indeed_result(ref,bebukey=None):
     urls = extractor.find_urls(page)
     links = urls
     print("Got links.")
+    company_url = None
     for link in links:
         if("indeed.com/rc/clk" in link):
             try:
@@ -191,7 +192,7 @@ def format_indeed_result(ref,bebukey=None):
             break
     if(not company_url): raise Exception("No links found")
     ref['url'] = company_url
-    title = utils.clean_text(ref['title']+" | "+ref['summary'])
+    title = utils.clean_text(ref['title'])
     print("title: "+title)
     intro="👍 JOB ALERT👍 "
     tweet = utils.format_tweet(title,ref['url'],"",intro,bebukey)['tweet']
