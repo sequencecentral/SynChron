@@ -3,7 +3,6 @@ import bs4
 import random
 import urllib
 import urllib.request
-import pyshorteners
 from newspaper import Article, Source, Config
 from func_timeout import func_timeout, FunctionTimedOut , func_set_timeout
 try:
@@ -46,9 +45,9 @@ def summarize_article(url):
             'keywords':article.keywords
             }
 
-def get_tweet(url):
+def get_tweet(url,bebukey=None):
     sum = summarize_article(url)
-    tweet = utils.format_tweet(sum['title'],url)
+    tweet = utils.format_tweet(sum['title'],url,"","",bebukey)
     return {
         'tweet':tweet['tweet'],
         'title':tweet['title'],
@@ -57,20 +56,20 @@ def get_tweet(url):
         'keywords':sum['keywords']
         }
 
-def get_update(term='news'):
+def get_update(term='news',bebukey=None):
     links = google(term)
     print('links:',len(links))
-    if(links):return get_tweet(random.choice(links))
+    if(links):return get_tweet(random.choice(links),bebukey)
 
 #similar to update, but returns updates for all sources
-def get_multiple(term='news',count=5):
+def get_multiple(term='news',count=5,bebukey=None):
     links = google(term)
     print('links:',len(links))
     tweets = []
     if(links):
         for url in links:
             try:
-                item = get_tweet(url)
+                item = get_tweet(url,bebukey)
                 tweets.append(item)
             except FunctionTimedOut:
                 print("Timed out. Rejecting post.")
