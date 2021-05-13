@@ -93,13 +93,13 @@ def get_reddit_links(ci, cs, ua="Mozilla",subreddit="science",max_attempts=5,cou
 
 def get_update(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",max_attempts=5,bebukey=None):
     print("Getting Reddit post.")
-    post = get_reddit_links(client_id,client_secret,user_agent,subreddit,max_attempts,bebukey)
+    post = get_reddit_links(client_id,client_secret,user_agent,subreddit,max_attempts,1,bebukey)
     if(not post): raise Exception("No post found!")
     return post
 
 def get_multiple(client_id = "", client_secret = "", user_agent="Mozilla",subreddit="technology",count=5,bebukey=None):
     print("Getting Reddit post.")
-    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,5,count,bebukey)
+    posts = get_reddit_links(client_id,client_secret,user_agent,subreddit,count,count,bebukey)
     if(not posts): raise Exception("No posts found!")
     return posts
 
