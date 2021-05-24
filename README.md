@@ -37,7 +37,8 @@ Package contains modules for interacting with online media sources. We call them
   - Use get_posts() for all interactions from now on.
   - get_posts()
     - **params**: 
-      - params={} - all required params -- can be empty if none applied
+      - params={} - all required params -- can be empty if none applied -- important for apis that require auth
+      - also **kwargs
     - **returns**: [] of objects, including the following minimal fields
       - title: string
       - description: string
