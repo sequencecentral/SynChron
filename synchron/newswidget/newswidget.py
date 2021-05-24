@@ -32,17 +32,21 @@ def google(term):
 
 def summarize_article(url):
     config = Config()
-    config.MAX_SUMMARY=150
-    config.MAX_SUMMARY_SENT=1
+    # config.MAX_SUMMARY=150
+    config.MAX_SUMMARY_SENT=3
     article = Article(url=url,config=config)
     article.download()
     article.parse()
     article.nlp()
     return {
             'title':article.title,
-            'summary':article.summary,
+            'summary':utils.clean_text(article.summary),
             'url':url,
-            'keywords':article.keywords
+            'keywords':"#"+" #".join(article.keywords[0:3]),
+            'img':article.top_image,
+            'author':", ".join(article.authors),
+            'text':article.text,
+            'movies':article.movies
             }
 
 def get_tweet(url,bebukey=None):
@@ -51,7 +55,7 @@ def get_tweet(url,bebukey=None):
     return {
         'tweet':tweet['tweet'],
         'title':tweet['title'],
-        'summary':tweet['summary'],
+        'summary':sum['summary'],
         'url':url,
         'keywords':sum['keywords']
         }
@@ -78,6 +82,28 @@ def get_multiple(term='news',count=5,bebukey=None):
                 print("Couldn't get article for link: "+link)
             if(len(tweets)>=count):return tweets
     return tweets
+
+def get_posts(params, count=1,**kwargs):
+    if('term' in params): 
+        term = params['term']
+    elif('term' in kwargs):
+        term = kwargs['term']
+    else:
+        term = "technology"
+
+    if('bebukey' in params): 
+        bebukey = params['bebukey']
+    elif('bebukey' in kwargs):
+        bebukey = kwargs['bebukey']
+    else: 
+        bebukey = None 
+
+    posts = get_multiple(
+        term,
+        count,
+        bebukey)
+    if(not posts): raise Exception("No posts found!")
+    return posts
 
 if(__name__ == "__main__"):
     print(get_multiple())

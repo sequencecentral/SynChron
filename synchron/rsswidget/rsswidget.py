@@ -101,11 +101,15 @@ def format_rss_result(ref,bebukey=None):
         ref['url'] = ref['url']
     ref['title'] = utils.clean_text(ref['title'])
     tweet = utils.format_tweet(ref['title'],ref['url'],ref['summary'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
     return {
         'tweet':tweet,
         'title':ref['title'],
-        'summary':utils.clean_text(ref['summary']),
-        'url':ref['url']
+        'url':ref['url'],
+        'summary': parsed['summary'],
+        'author':parsed['author'],
+        'img':parsed['img'],
+        'movies':parsed['movies']
         }
 
 ############################## Nature Blog: ##############################
@@ -113,11 +117,15 @@ def format_nature_blog_result(ref,bebukey):
     full_url = utils.clean_url(ref['id'])
     ref['title'] = utils.clean_text(ref['title'])
     tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
     return {
         'tweet':tweet,
         'title':ref['title'],
-        'summary':utils.clean_text(ref['summary']),
-        'url':full_url
+        'url':full_url,
+        'summary': parsed['summary'],
+        'author':parsed['author'],
+        'img':parsed['img'],
+        'movies':parsed['movies']
         }
 
 #################################### BioITWorld: ####################################
@@ -125,11 +133,15 @@ def format_bioitworld_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
     tweet = utils.format_tweet(ref['title'],full_url,ref['title'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
     return {
         'tweet':tweet,
         'title':ref['title'],
-        'summary':utils.clean_text(ref['summary']),
-        'url':full_url
+        'url':full_url,
+        'summary': parsed['summary'],
+        'author':parsed['author'],
+        'img':parsed['img'],
+        'movies':parsed['movies']
         }
 
 #################################### GenomeWeb: ####################################
@@ -137,11 +149,15 @@ def format_genomeweb_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     ref['title'] = utils.clean_text(ref['title'])
     tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
     return {
         'tweet':tweet,
         'title':ref['title'],
-        'summary':utils.clean_text(ref['summary']),
-        'url':full_url
+        'url':full_url,
+        'summary': parsed['summary'],
+        'author':parsed['author'],
+        'img':parsed['img'],
+        'movies':parsed['movies']
         }
 
 #################################### Techcrunch: ####################################
@@ -149,11 +165,17 @@ def format_techcrunch_result(ref,bebukey=None):
     full_url = utils.clean_url(ref['link'])
     print("Updated URL for post: "+full_url)
     tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
+    print(">>> PARSED")
+    print(parsed)
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
-            'summary':utils.clean_text(ref['summary']),
-            'url':full_url
+            'url':full_url,
+            'summary': parsed['summary'],
+            'author':parsed['author'],
+            'img':parsed['img'],
+            'movies':parsed['movies']
         }
 
 #################################### Pubmed: ####################################
@@ -164,11 +186,15 @@ def format_pubmed_result(ref,bebukey=None):
     print("Updated URL for post: "+full_url)
     if(not valid_string(ref['title'],rejects)): raise Exception("Rejecting post: "+ref['title'])
     tweet = utils.format_tweet(ref['title'],full_url,ref['summary'],"",bebukey)['tweet']
+    parsed = utils.summarize_post(ref)
     return {
             'tweet':tweet,
             'title':utils.clean_text(ref['title']),
-            'summary':utils.clean_text(ref['summary']),
-            'url':full_url
+            'url':full_url,
+            'summary': parsed['summary'],
+            'author':parsed['author'],
+            'img':parsed['img'],
+            'movies':parsed['movies']
         }
 
 #################################### Indeed: ####################################
@@ -204,6 +230,7 @@ def format_indeed_result(ref,bebukey=None):
         'url':ref['url'],
         'source':ref['source']
         }
+
 #################################### Get Result: ####################################
 @func_set_timeout(300)
 def format_result(res,res_type='rss',bebukey=None):
@@ -311,6 +338,29 @@ def get_update(feed_name = "techcrunch",c=1,*args,**kwargs):
 #managed to generalize the get_update function, but keeping this one for compatibility
 def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
     return get_update(feed_name,c,args,kwargs)
+
+def get_posts(params=None, count=1,**kwargs):
+    #get the bebukey
+    if('bebukey' in params): 
+        bebukey = params['bebukey']
+    elif('bebukey' in kwargs):
+        bebukey = kwargs['bebukey']
+    else: 
+        bebukey = None 
+    feed = None
+    url = None
+    #get the feed
+    if('feed' in params): feed = params['feed']
+    elif('feed' in kwargs): feed = kwargs['feed']
+    elif('name' in params): feed = params['name']
+    elif('name' in kwargs['name']): feed = kwargs['name']
+    elif('url' in params): url = params['url']
+    elif('url' in kwargs): url = kwargs['url']
+    else: feed = 'techcrunch'
+    if(url): posts = get_url(url,count,bebukey)
+    else: posts = get_feed(feed,count,bebukey)
+    if(not posts): raise Exception("No posts found!")
+    return posts
 
 if __name__ == "__main__":
     print("tw")

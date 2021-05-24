@@ -8,3 +8,41 @@ Package contains modules for interacting with online media sources. We call them
 
 ## rsswidget 
 - Use this whenever possible. It's simplest to get an rss feed if one is available. 
+
+## redditwidget
+- Get Reddit posts. This requires Reddit API credentials.
+- Consider using the RSS widget with address: https://www.reddit.com/r/news.rss - this works. However, it doesn't support all of the Reddit features
+
+## udemywidget
+- Specific functionality to get Udemy course links. This uses the same general process as Reddit, but has been taylored to meet the Udemy case.
+
+## newswidget
+- Gets links from Google news search
+
+## twitter widget
+- Requires Twitter credentials
+- 2-way functionality (read and write posts)
+
+## quote widget
+- Random quotes
+- Proof of concept widget. Use this to validate your use of this library
+- Some of the quotes are pretty good.
+
+## utils
+- Common functions have been factored out into utils. These include functions for cleaning up links and URLs.
+
+## Version 1.2
+- Added a standard function for universal standardization.
+  - This supercedes the get_update and get_multiple functions. However, these have been left in-place for compatibility purposes.
+  - Use get_posts() for all interactions from now on.
+  - get_posts()
+    - **params**: 
+      - params={} - all required params -- can be empty if none applied
+    - **returns**: [] of objects, including the following minimal fields
+      - title: string
+      - description: string
+      - author: string
+      - url: url
+      - tweet: string
+      - img: img url
+      - tags: string

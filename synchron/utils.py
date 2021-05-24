@@ -1,15 +1,21 @@
 import random
 import re
 from io import StringIO
-from html.parser import HTMLParser
-import feedparser
+from datetime import datetime
+#network
 import requests
-import pyshorteners
 import ssl
 import urllib.request
-import urlextract
-from urlextract import URLExtract
 from urllib.request import Request, urlopen
+#html processing
+from html.parser import HTMLParser
+from urlextract import URLExtract
+#shorteners
+import pyshorteners
+# import feedparser
+from newspaper import Article, Source, Config
+
+#global variables
 ua = "Mozilla Firefox Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0"
 max_len = 210 #280 max
 
@@ -20,6 +26,14 @@ def get_item(lis):
         return str(items[0])
     else:
         return str(random.choice(items))
+
+def timestamp():
+    now = datetime.now()
+    return now.strftime("%d/%m/%Y %H:%M:%S")
+
+def datestamp():
+    now = datetime.now()
+    return now.strftime("%A, %B %d, %Y")
 
 ########################################## TEXT CLEANING: ####################################
 class MLStripper(HTMLParser):
@@ -40,7 +54,6 @@ def strip_tags(html):
     text = s.get_data()
     return text
 
-
 #strip unicode escape codes and sub with '
 def strip_codes(str):
     return re.sub(r'\[?&#\d{4};\]?','\'',str)
@@ -51,8 +64,53 @@ def clean_text(str):
     #remove any HTML tags
     str = strip_tags(str)
     #remove non-alphanumeric characters
-    str = re.sub(r'[^a-zA-Z0-9-_#@%&!.;:*$,|\'\-() ]','', str)
+    str = re.sub(r'\n',' ',str)
+    str = re.sub(r'[^a-zA-Z0-9-_#@%&!.;:*$,|’\'\"\-() ]',' ', str)
+    str = re.sub(r'Enlarge this image','',str)
+    str = re.sub(r'toggle caption','',str)
+    str = re.sub(r'BACKGROUND','',str)
     return str
+
+def summarize_article(url,sent=3):
+    print("Summarizing article at url:"+url)
+    # print(url)
+    config = Config()
+    # config.MAX_SUMMARY=500
+    config.MAX_SUMMARY_SENT=sent
+    article = Article(url=url,config=config)
+    article.download()
+    article.parse()
+    article.nlp()
+    return {
+            'title':clean_text(article.title),
+            'summary':clean_text(article.summary),
+            'url':url,
+            'keywords':"#"+" #".join(article.keywords[0:3]),
+            'img':article.top_image,
+            'author':", ".join(article.authors),
+            'text':article.text,
+            'movies':article.movies
+            }
+
+def summarize_post(post):
+    if('summary' in post): 
+        post['summary'] = clean_text(post['summary'])
+    elif('description' in post):
+        post['summary'] = clean_text(post['description'])
+    elif('abstract' in post):
+        post['summary'] = clean_text(post['abstract'])
+    try:
+        parsed = summarize_article(get_url(post))
+        if('author' not in post): post['author'] = parsed['author']
+        post['img'] = parsed['img']
+        post['movies'] = parsed['movies']
+        if('summary' not in post): post['summary'] = parsed['summary']
+    except Exception as e:
+        print(e)
+        post['img'] = ""
+        post['author'] = ""
+        post['movies'] = ""
+    return post
 
 def format_tweet(ti,url,summary="",intro="",bebukey=None):
     title = intro+clean_text(ti)
@@ -74,6 +132,11 @@ def format_tweet(ti,url,summary="",intro="",bebukey=None):
         'url':url
     }
 ########################################## URLS: ##########################################
+def get_url(post):
+    if('url' in post): return clean_url(post['url'])
+    elif('full_url' in post): return clean_url(post['full_url'])
+    elif('link' in post): return clean_url(post['link'])
+
 def clean_url(url):
     try:
         return unshorten(url)

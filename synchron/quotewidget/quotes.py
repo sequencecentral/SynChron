@@ -10,6 +10,52 @@ try:
 except:
     from synchron import utils
 
+def get_random_quote():
+    return random.choice(quotes_list)
+
+def create_random_tweet():
+    quote = get_random_quote()
+    tweet = """{} - {}""".format(quote['quoteText'], quote['quoteAuthor'])
+    return tweet
+
+def create_post():
+    post = {}
+    quote = get_random_quote()
+    tweet = """{} - {}""".format(quote['quoteText'], quote['quoteAuthor'])
+    post['tweet']=tweet
+    post['title'] = "Quote for {}".format(utils.datestamp())
+    post['description'] = quote['quoteText']
+    post['author'] = quote['quoteAuthor']
+    post['url'] = ""
+    post['img'] = ""
+    post['tags'] = "#quotes" 
+    return post
+
+def test():
+    print("Test quotes.")
+
+def get_update():
+    return {'tweet':create_random_tweet()}
+
+def get_multiple(count=1):
+    res = []
+    for i in range(count):
+        res.append(get_update())
+    return res
+
+def get_posts(params,count=1):
+    res = []
+    for i in range(count):
+        res.append(create_post())
+    return res
+       
+    
+if(__name__ == "__main__"):
+    print("Running in: "+cwd)
+    print(get_update())
+
+
+
 quotes_list = [{
 "quoteText": "Genius is one percent inspiration and ninety-nine percent perspiration.",
 "quoteAuthor": "Thomas Edison"
@@ -16274,28 +16320,4 @@ quotes_list = [{
 "quoteText": "Sometimes the cards we are dealt are not always fair. However you must keep smiling and moving on.",
 "quoteAuthor": "Tom Jackson"
 }]
-
-def get_random_quote():
-    return random.choice(quotes_list)
-
-def create_random_tweet():
-    quote = get_random_quote()
-    tweet = """{} - {}""".format(quote['quoteText'], quote['quoteAuthor'])
-    return tweet
-
-def test():
-    print("Test quotes.")
-
-def get_update():
-    return {'tweet':create_random_tweet()}
-
-def get_multiple(count=1):
-    res = []
-    for i in range(count):
-        res.append(get_update())
-    return res
-    
-if(__name__ == "__main__"):
-    print("Running in: "+cwd)
-    print(get_update())
 
