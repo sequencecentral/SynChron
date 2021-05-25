@@ -166,20 +166,18 @@ def get_multiple(client_id, client_secret, post_number=5,bebukey=None):
 #get_posts = the main function. 
 #count is required
 #additional parameters can be in kwargs
-def get_posts(params, count=1,**kwargs):
-    if('bebukey' in params): 
-        bebukey = params['bebukey']
-    elif('bebukey' in kwargs):
+def get_posts(count=1,**kwargs):
+    if('bebukey' in kwargs):
         bebukey = kwargs['bebukey']
     else: 
         bebukey = None 
 
     try:
-        client_id = params['REDDIT_CLIENT_ID']
-        client_secret = params['REDDIT_CLIENT_SECRET']
+        client_id = kwargs['REDDIT_CLIENT_ID']
+        client_secret = kwargs['REDDIT_CLIENT_SECRET']
     except:
-        client_id = params['client_id']
-        client_secret = params['client_secret']
+        client_id = kwargs['client_id']
+        client_secret = kwargs['client_secret']
 
     posts = get_multiple(
         client_id,
@@ -188,7 +186,6 @@ def get_posts(params, count=1,**kwargs):
         bebukey)
     if(not posts): raise Exception("No posts found!")
     return posts
-
 
 def test():
     with open('page.html', 'r') as f:

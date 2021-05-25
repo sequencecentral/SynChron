@@ -83,17 +83,14 @@ def get_multiple(term='news',count=5,bebukey=None):
             if(len(tweets)>=count):return tweets
     return tweets
 
-def get_posts(params, count=1,**kwargs):
-    if('term' in params): 
-        term = params['term']
-    elif('term' in kwargs):
+#call with **spread
+def get_posts(count=1,**kwargs):
+    if('term' in kwargs):
         term = kwargs['term']
     else:
         term = "technology"
 
-    if('bebukey' in params): 
-        bebukey = params['bebukey']
-    elif('bebukey' in kwargs):
+    if('bebukey' in kwargs):
         bebukey = kwargs['bebukey']
     else: 
         bebukey = None 

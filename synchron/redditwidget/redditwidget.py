@@ -137,27 +137,23 @@ def get_multiple(client_id = "", client_secret = "", user_agent="Mozilla",subred
 #get_posts = the main function. 
 #count is required
 #additional parameters can be in kwargs
-def get_posts(params, count=1,**kwargs):
-    if('subreddit' in params): 
-        subreddit = params['subreddit']
-    elif('subreddit' in kwargs):
+def get_posts(count=1,**kwargs):
+    if('subreddit' in kwargs):
         subreddit = kwargs['subreddit']
     else:
         subreddit = "technology"
 
-    if('bebukey' in params): 
-        bebukey = params['bebukey']
-    elif('bebukey' in kwargs):
+    if('bebukey' in kwargs):
         bebukey = kwargs['bebukey']
     else: 
         bebukey = None 
 
     try:
-        client_id = params['REDDIT_CLIENT_ID']
-        client_secret = params['REDDIT_CLIENT_SECRET']
+        client_id = kwargs['REDDIT_CLIENT_ID']
+        client_secret = kwargs['REDDIT_CLIENT_SECRET']
     except:
-        client_id = params['client_id']
-        client_secret = params['client_secret']
+        client_id = kwargs['client_id']
+        client_secret = kwargs['client_secret']
 
     posts = get_reddit_links(
         client_id,

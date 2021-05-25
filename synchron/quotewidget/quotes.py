@@ -43,7 +43,7 @@ def get_multiple(count=1):
         res.append(get_update())
     return res
 
-def get_posts(params,count=1):
+def get_posts(count=1):
     res = []
     for i in range(count):
         res.append(create_post())

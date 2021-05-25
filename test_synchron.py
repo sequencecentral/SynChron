@@ -46,7 +46,7 @@ class QuoteWidget(unittest.TestCase):
     
     def test_get_posts(self):
         count = 3
-        posts = quotewidget.get_posts(None,count)
+        posts = quotewidget.get_posts(count)
         # print(posts)
         self.assertEqual(count,len(posts))
         self.assertEqual(type(posts[0]['tweet']),type("text"))
@@ -57,17 +57,17 @@ class RedditWidget(unittest.TestCase):
             env = json.load(creds)
             # print(env)
             count=1
-            posts = redditwidget.get_posts(env,count,subreddit="worldnews")
+            posts = redditwidget.get_posts(count,subreddit="worldnews",**env)
             print(posts)
 
 class NewsWidget(unittest.TestCase):
     def test_get_posts(self):
-        posts = newswidget.get_posts({},1,term = "news")
+        posts = newswidget.get_posts(1,term = "news")
         print(posts)
 
 class RSSWidget(unittest.TestCase):
     def test_get_posts(self):
-        posts = rsswidget.get_posts({},1,feed = "genomics")
+        posts = rsswidget.get_posts(1,feed = "genomics")
         print(posts)
 
 class UdemyWidget(unittest.TestCase):
@@ -76,7 +76,7 @@ class UdemyWidget(unittest.TestCase):
             env = json.load(creds)
             # print(env)
             count=1
-            posts = udemywidget.get_posts(env,count)
+            posts = udemywidget.get_posts(count,**env)
             print(posts)
 
 if __name__ == '__main__':

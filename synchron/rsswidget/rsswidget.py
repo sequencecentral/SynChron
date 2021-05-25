@@ -341,20 +341,15 @@ def get_multiple(feed_name="techcrunch",c=5,*args,**kwargs):
 
 def get_posts(params=None, count=1,**kwargs):
     #get the bebukey
-    if('bebukey' in params): 
-        bebukey = params['bebukey']
-    elif('bebukey' in kwargs):
+    if('bebukey' in kwargs):
         bebukey = kwargs['bebukey']
     else: 
         bebukey = None 
     feed = None
     url = None
     #get the feed
-    if('feed' in params): feed = params['feed']
-    elif('feed' in kwargs): feed = kwargs['feed']
-    elif('name' in params): feed = params['name']
+    if('feed' in kwargs): feed = kwargs['feed']
     elif('name' in kwargs['name']): feed = kwargs['name']
-    elif('url' in params): url = params['url']
     elif('url' in kwargs): url = kwargs['url']
     else: feed = 'techcrunch'
     if(url): posts = get_url(url,count,bebukey)
