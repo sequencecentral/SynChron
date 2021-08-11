@@ -19,7 +19,7 @@ setup(
     author='Steve Ayers, Ph.D.',
     author_email='steve@sequenccecentral.com',
     # install_requires=[],
-    version='1.2.3',
+    version=open('VERSION').read(),
     license='MIT',
     # packages=['synchronicity','synchronicity.quotewidget'],
     packages = find_packages(),
