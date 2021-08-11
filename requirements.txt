@@ -1,13 +1,15 @@
 appdirs==1.4.4
-# BasicBot @ git+https://github.com/sequencecentral/BasicBot.git@18ed4c557d9eaef82ed69e6c3d5cf5e0e42503fd
 beautifulsoup4==4.9.3
 bleach==3.3.0
 breadability==0.1.20
 bs4==0.0.1
 certifi==2020.12.5
+cffi==1.14.6
 chardet==4.0.0
+charset-normalizer==2.0.4
 click==7.1.2
 colorama==0.4.4
+cryptography==3.4.7
 cssselect==1.1.0
 distlib==0.3.1
 docopt==0.6.2
@@ -16,12 +18,12 @@ feedfinder2==0.0.4
 feedparser==6.0.2
 filelock==3.0.12
 func-timeout==4.3.5
-gcloud==0.17.0
 googleapis-common-protos==1.53.0
 httplib2==0.19.1
 idna==2.10
 importlib-metadata==4.0.1
 install==1.3.4
+jeepney==0.7.1
 jieba3k==0.35.1
 joblib==1.0.1
 jws==0.1.3
@@ -41,10 +43,10 @@ protobuf==3.16.0rc1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycountry==20.7.3
+pycparser==2.20
 pycryptodome==3.4.3
 Pygments==2.9.0
 pyparsing==2.4.7
-# Pyrebase==3.0.27
 pyshorteners==1.0.1
 PySocks==1.7.1
 python-dateutil==2.8.1
@@ -52,15 +54,15 @@ python-dotenv==0.15.0
 python-jwt==2.0.1
 pytz==2021.1
 PyYAML==5.4.1
-# quotewidget @ git+https://github.com/sequencecentral/QuoteWidget.git@feef076822ac7cae2e0f143668b70b7ea5c813fa
 readme-renderer==29.0
 regex==2021.4.4
-requests>=2
-requests-file>=1.5
-requests-oauthlib>=1.3
-requests-toolbelt>=0.7
+requests==2.26.0
+requests-file==1.5.1
+requests-oauthlib==1.3.0
+requests-toolbelt==0.9.1
 rfc3986==1.4.0
 rsa==4.7.2
+SecretStorage==3.3.1
 sgmllib3k==1.0.0
 six==1.15.0
 soupsieve==2.2.1

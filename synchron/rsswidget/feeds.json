@@ -32,10 +32,6 @@
         "type":"bioitworld",
         "url":"https://www.bio-itworld.com/feeds/BioIT_WorldNews_RSS"
     },
-    "stanford":{
-        "type":"pubmed",
-        "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1TuHRxU62XQv0joP9m4YxJoOJgd6ttMxTnxNdgPseZjwteRssh/?limit=100&utm_campaign=pubmed-2&fc=20210427161140"
-    },
     "unusual":{
         "type":"pubmed",
         "url":"https://pubmed.ncbi.nlm.nih.gov/rss/search/1xCFUMSbAMYatD8eKGfeJ_0ANNg4o9dwfarY2JtJxHVZbcrE-3/?limit=100&utm_campaign=pubmed-2&fc=20210427161648"
